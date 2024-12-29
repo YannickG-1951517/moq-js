@@ -57,6 +57,7 @@ export class Client {
 			throw new Error(`unsupported server version: ${server.version}`)
 		}
 
+		// initialiseer 2 streams, een voor de control messages en een voor de data messages
 		const control = new Control.Stream(reader, writer)
 		const objects = new Objects(quic)
 

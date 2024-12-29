@@ -1,4 +1,6 @@
 import { Reader, Writer } from "./stream"
+import { Logger } from "../logging/logger"
+
 export { Reader, Writer }
 
 export enum StreamType {
@@ -151,6 +153,19 @@ export class Objects {
 		}
 
 		// console.trace("receive object", res.header)
+
+		// ! IMPORTANT
+
+		// console.log( typeof res.header.type, typeof res.header.sub, typeof res.header.track, typeof res.header.priority)
+		// console.log( res.header.type, res.header.sub, res.header.track, res.header.priority)
+
+		// * gets called a lot! 
+		// Logger.getInstance().logEvent("Received object", {
+		// 	type: res.header.type,
+		// 	sub: Number(res.header.sub),
+		// 	track: Number(res.header.track),
+		// 	priority: res.header.priority,
+		// })
 
 		return res
 	}

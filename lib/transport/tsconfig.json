@@ -1,9 +1,13 @@
 {
 	"extends": "../tsconfig.json",
-	"include": ["."],
+	"include": [".", "../logging"],
+	"exclude": ["./worklet", "./playback"],
 	"references": [
 		{
 			"path": "../common"
+		},
+		{
+			"path": "../logging"
 		}
-	]
+	],
 }

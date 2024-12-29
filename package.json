@@ -11,5 +11,14 @@
 		"build": "npm run build --workspaces",
 		"lint": "npm run lint --workspaces",
 		"fmt": "npm run fmt --workspaces"
+	},
+	"devDependencies": {
+		"@types/node": "^22.8.2"
+	},
+	"dependencies": {
+		"@rajesh896/broprint.js": "^2.1.1",
+		"buffer": "^6.0.3",
+		"fs": "^0.0.1-security",
+		"mqtt": "^5.10.3"
 	}
 }

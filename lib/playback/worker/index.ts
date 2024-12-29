@@ -9,6 +9,8 @@ import { asError } from "../../common/error"
 import { Deferred } from "../../common/async"
 import { GroupReader, Reader } from "../../transport/objects"
 
+import { Logger } from "../../logging/logger"
+
 class Worker {
 	// Timeline receives samples, buffering them and choosing the timestamp to render.
 	#timeline = new Timeline()
@@ -79,6 +81,12 @@ class Worker {
 			frames: queue.readable,
 		})
 		segments.releaseLock()
+
+		// ! IMPORTANT
+		Logger.getInstance().logEvent("segment", {
+			kind: msg.kind,
+			group: msg.header.group,
+		})
 
 		// Read each chunk, decoding the MP4 frames and adding them to the queue.
 		for (;;) {

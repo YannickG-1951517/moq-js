@@ -158,6 +158,8 @@ export class Stream {
 		this.encoder = new Encoder(w)
 	}
 
+	// ! IMPORTANT
+
 	// Will error if two messages are read at once.
 	async recv(): Promise<Message> {
 		const msg = await this.decoder.message()

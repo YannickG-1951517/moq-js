@@ -2,6 +2,7 @@ import * as Control from "./control"
 import { Queue, Watch } from "../common/async"
 import { Objects } from "./objects"
 import type { TrackReader, GroupReader, ObjectReader } from "./objects"
+import { Logger } from "../logging/logger"
 
 export class Subscriber {
 	// Use to send control messages.
@@ -44,6 +45,10 @@ export class Subscriber {
 	}
 
 	async recvAnnounce(msg: Control.Announce) {
+		console.log("announce message and sending to logger", msg.namespace)
+		Logger.getInstance().logEvent("announce", {
+			namespace: msg.namespace,
+		})
 		if (this.#announce.has(msg.namespace)) {
 			throw new Error(`duplicate announce for namespace: ${msg.namespace}`)
 		}
@@ -75,6 +80,11 @@ export class Subscriber {
 			location: {
 				mode: "latest_group",
 			},
+		})
+
+		Logger.getInstance().logEvent("subscribe asked", {
+			track: track,
+			namespace: namespace,
 		})
 
 		return subscribe
@@ -192,6 +202,9 @@ export class SubscribeSend {
 
 	// Receive the next a readable data stream
 	async data() {
+		// Logger.getInstance().logEvent("subscribe", {
+		// 	track: this.track,
+		// })
 		return await this.#data.next()
 	}
 }

@@ -1,6 +1,7 @@
 import * as Control from "./control"
 import { Queue, Watch } from "../common/async"
 import { Objects, GroupWriter, ObjectWriter, StreamType, TrackWriter } from "./objects"
+import { Logger } from "../logging/logger"
 
 export class Publisher {
 	// Used to send control messages
@@ -23,6 +24,13 @@ export class Publisher {
 
 	// Announce a track namespace.
 	async announce(namespace: string): Promise<AnnounceSend> {
+
+		// ! IMPORTANT
+		Logger.getInstance().logEvent("announce", {
+			namespace,
+		})
+
+
 		if (this.#announce.has(namespace)) {
 			throw new Error(`already announce: ${namespace}`)
 		}

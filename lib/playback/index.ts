@@ -54,7 +54,9 @@ export class Player {
 		const connection = await client.connect()
 
 		const catalog = await Catalog.fetch(connection, config.namespace)
+
 		console.log("catalog", catalog)
+		
 
 		const canvas = config.canvas.transferControlToOffscreen()
 		const backend = new Backend({ canvas, catalog })
@@ -99,6 +101,7 @@ export class Player {
 
 	async #runTrack(track: Catalog.Track) {
 		if (!track.namespace) throw new Error("track has no namespace")
+		console.log("here")
 		const sub = await this.#connection.subscribe(track.namespace, track.name)
 
 		try {
