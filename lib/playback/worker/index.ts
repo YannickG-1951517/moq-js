@@ -83,9 +83,12 @@ class Worker {
 		segments.releaseLock()
 
 		// ! IMPORTANT
-		Logger.getInstance().logEvent("segment", {
-			kind: msg.kind,
-			group: msg.header.group,
+		Logger.getInstance().logEvent({
+			eventType: "segment",
+			data: {
+				kind: msg.kind,
+				group: msg.header.group,
+			},
 		})
 
 		// Read each chunk, decoding the MP4 frames and adding them to the queue.

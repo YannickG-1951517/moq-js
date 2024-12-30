@@ -46,8 +46,11 @@ export class Subscriber {
 
 	async recvAnnounce(msg: Control.Announce) {
 		console.log("announce message and sending to logger", msg.namespace)
-		Logger.getInstance().logEvent("announce", {
-			namespace: msg.namespace,
+		Logger.getInstance().logEvent({
+			eventType: "announce",
+			data: {
+				namespace: msg.namespace,
+			},
 		})
 		if (this.#announce.has(msg.namespace)) {
 			throw new Error(`duplicate announce for namespace: ${msg.namespace}`)
@@ -82,9 +85,12 @@ export class Subscriber {
 			},
 		})
 
-		Logger.getInstance().logEvent("subscribe asked", {
-			track: track,
-			namespace: namespace,
+		Logger.getInstance().logEvent({
+			eventType: "subscribe asked",
+			data: {
+				track: track,
+				namespace: namespace,
+			},
 		})
 
 		return subscribe

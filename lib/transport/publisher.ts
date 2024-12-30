@@ -24,12 +24,13 @@ export class Publisher {
 
 	// Announce a track namespace.
 	async announce(namespace: string): Promise<AnnounceSend> {
-
 		// ! IMPORTANT
-		Logger.getInstance().logEvent("announce", {
-			namespace,
+		Logger.getInstance().logEvent({
+			eventType: "announce",
+			data: {
+				namespace,
+			},
 		})
-
 
 		if (this.#announce.has(namespace)) {
 			throw new Error(`already announce: ${namespace}`)
