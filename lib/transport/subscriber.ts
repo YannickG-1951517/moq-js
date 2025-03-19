@@ -84,7 +84,7 @@ export class Subscriber {
 				mode: "latest_group",
 			},
 		})
-
+		console.log("subscribe message and sending to logger", track, namespace)
 		Logger.getInstance().logEvent({
 			eventType: "subscribe asked",
 			data: {

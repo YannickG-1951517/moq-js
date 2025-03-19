@@ -3,9 +3,9 @@
 	"include": [".", "../common"],
 	"exclude": ["./worklet", "./playback"],
 	"compilerOptions": {
-		"module": "ESNext",
+		"module": "ESNext"
 	},
-    "ts-node": {"esm": true},
+	"ts-node": { "esm": true },
 	"references": [
 		{
 			"path": "../common"

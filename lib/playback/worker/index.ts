@@ -83,6 +83,7 @@ class Worker {
 		segments.releaseLock()
 
 		// ! IMPORTANT
+		console.log("segment message and sending to logger", msg.kind, msg.header.group) // PARTY!! THIS IS PROOF THAT ITS NOT MY FAULT
 		Logger.getInstance().logEvent({
 			eventType: "segment",
 			data: {
