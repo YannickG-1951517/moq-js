@@ -83,14 +83,15 @@ class Worker {
 		segments.releaseLock()
 
 		// ! IMPORTANT
-		console.log("segment message and sending to logger", msg.kind, msg.header.group) // PARTY!! THIS IS PROOF THAT ITS NOT MY FAULT
-		Logger.getInstance().logEvent({
-			eventType: "segment",
-			data: {
-				kind: msg.kind,
-				group: msg.header.group,
-			},
-		})
+		// console.log("segment message and sending to logger", msg.kind, msg.header.group) // PARTY!! THIS IS PROOF THAT ITS NOT MY FAULT
+		// Logger.getInstance().logEvent({
+		// 	eventType: "segment",
+		// 	vantagePointID: "RECEIVER",
+		// 	data: {
+		// 		kind: msg.kind,
+		// 		group: msg.header.group,
+		// 	},
+		// })
 
 		// Read each chunk, decoding the MP4 frames and adding them to the queue.
 		for (;;) {

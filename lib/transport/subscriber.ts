@@ -30,14 +30,57 @@ export class Subscriber {
 
 	async recv(msg: Control.Publisher) {
 		if (msg.kind == Control.Msg.Announce) {
+			console.log("announce message and sending to logger", msg)
+			Logger.getInstance().logEvent({
+				eventType: "announce-received",
+				vantagePointID: "SUBSCRIBER",
+				stream: "logging-stream",
+				data: {
+					message: msg,
+				},
+			})
 			await this.recvAnnounce(msg)
 		} else if (msg.kind == Control.Msg.Unannounce) {
+			console.log("unannounce message and sending to logger", msg)
+			Logger.getInstance().logEvent({
+				eventType: "unannounce-received",
+				vantagePointID: "SUBSCRIBER",
+				stream: "logging-stream",
+				data: {
+					message: msg,
+				},
+			})
 			this.recvUnannounce(msg)
 		} else if (msg.kind == Control.Msg.SubscribeOk) {
+			console.log("subscribe ok message and sending to logger", msg)
+			Logger.getInstance().logEvent({
+				eventType: "subscribe-ok-received",
+				vantagePointID: "SUBSCRIBER",
+				stream: "logging-stream",
+				data: {
+					message: msg,
+				},
+			})
 			this.recvSubscribeOk(msg)
 		} else if (msg.kind == Control.Msg.SubscribeError) {
+			Logger.getInstance().logEvent({
+				eventType: "subscribe-error-received",
+				vantagePointID: "SUBSCRIBER",
+				stream: "logging-stream",
+				data: {
+					error: msg,
+				},
+			})
 			await this.recvSubscribeError(msg)
 		} else if (msg.kind == Control.Msg.SubscribeDone) {
+			Logger.getInstance().logEvent({
+				eventType: "subscribe-done-received",
+				vantagePointID: "SUBSCRIBER",
+				stream: "logging-stream",
+				data: {
+					message: msg,
+				},
+			})
 			await this.recvSubscribeDone(msg)
 		} else {
 			throw new Error(`unknown control message`) // impossible
@@ -45,13 +88,6 @@ export class Subscriber {
 	}
 
 	async recvAnnounce(msg: Control.Announce) {
-		console.log("announce message and sending to logger", msg.namespace)
-		Logger.getInstance().logEvent({
-			eventType: "announce",
-			data: {
-				namespace: msg.namespace,
-			},
-		})
 		if (this.#announce.has(msg.namespace)) {
 			throw new Error(`duplicate announce for namespace: ${msg.namespace}`)
 		}
@@ -86,7 +122,9 @@ export class Subscriber {
 		})
 		console.log("subscribe message and sending to logger", track, namespace)
 		Logger.getInstance().logEvent({
-			eventType: "subscribe asked",
+			eventType: "subscribe_asked",
+			vantagePointID: "SUBSCRIBER",
+			stream: "logging-stream",
 			data: {
 				track: track,
 				namespace: namespace,

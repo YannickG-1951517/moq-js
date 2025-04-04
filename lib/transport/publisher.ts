@@ -26,9 +26,11 @@ export class Publisher {
 	async announce(namespace: string): Promise<AnnounceSend> {
 		// ! IMPORTANT
 		Logger.getInstance().logEvent({
-			eventType: "announce",
+			eventType: "announce-track",
+			vantagePointID: "PUBLISHER",
+			stream: "logging-stream",
 			data: {
-				namespace,
+				namespace: namespace,
 			},
 		})
 
@@ -54,12 +56,44 @@ export class Publisher {
 
 	async recv(msg: Control.Subscriber) {
 		if (msg.kind == Control.Msg.Subscribe) {
+			Logger.getInstance().logEvent({
+				eventType: "subscribe-received",
+				vantagePointID: "PUBLISHER",
+				stream: "logging-stream",
+				data: {
+					message: msg,
+				},
+			})
 			await this.recvSubscribe(msg)
 		} else if (msg.kind == Control.Msg.Unsubscribe) {
+			Logger.getInstance().logEvent({
+				eventType: "unsubscribe-received",
+				vantagePointID: "PUBLISHER",
+				stream: "logging-stream",
+				data: {
+					message: msg,
+				},
+			})
 			this.recvUnsubscribe(msg)
 		} else if (msg.kind == Control.Msg.AnnounceOk) {
+			Logger.getInstance().logEvent({
+				eventType: "announce-ok-received",
+				vantagePointID: "PUBLISHER",
+				stream: "logging-stream",
+				data: {
+					message: msg,
+				},
+			})
 			this.recvAnnounceOk(msg)
 		} else if (msg.kind == Control.Msg.AnnounceError) {
+			Logger.getInstance().logEvent({
+				eventType: "announce-error-received",
+				vantagePointID: "PUBLISHER",
+				stream: "logging-stream",
+				data: {
+					message: msg,
+				},
+			})
 			this.recvAnnounceError(msg)
 		} else {
 			throw new Error(`unknown control message`) // impossible

@@ -4,6 +4,8 @@ import * as Control from "./control"
 import { Objects } from "./objects"
 import { Connection } from "./connection"
 
+import { Logger } from "../logging/logger"
+
 export interface ClientConfig {
 	url: string
 
@@ -36,6 +38,17 @@ export class Client {
 		const fingerprint = await this.#fingerprint
 		if (fingerprint) options.serverCertificateHashes = [fingerprint]
 
+		console.log("client config", this.config)
+
+		Logger.getInstance().logEvent({
+			eventType: "connect-sent",
+			vantagePointID: this.config.role == "publisher" ? "PUBLISHER" : "SUBSCRIBER",
+			stream: "logging-stream",
+			data: {
+				destination: this.config.url,
+			},
+		})
+
 		const quic = new WebTransport(this.config.url, options)
 		await quic.ready
 
@@ -45,6 +58,8 @@ export class Client {
 		const reader = new Stream.Reader(new Uint8Array(), stream.readable)
 
 		const setup = new Setup.Stream(reader, writer)
+
+		// !IMPORTANT The client setup message gets sent here
 
 		// Send the setup message.
 		await setup.send.client({ versions: [Setup.Version.DRAFT_04], role: this.config.role })
