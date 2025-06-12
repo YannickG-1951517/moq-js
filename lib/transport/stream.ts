@@ -1,3 +1,5 @@
+import { Logger } from "../logging/logger"
+
 const MAX_U6 = Math.pow(2, 6) - 1
 const MAX_U14 = Math.pow(2, 14) - 1
 const MAX_U30 = Math.pow(2, 30) - 1
@@ -11,6 +13,7 @@ export class Reader {
 	#buffer: Uint8Array
 	#stream: ReadableStream<Uint8Array>
 	#reader: ReadableStreamDefaultReader<Uint8Array>
+	#totalBytesReceived: number = 0
 
 	constructor(buffer: Uint8Array, stream: ReadableStream<Uint8Array>) {
 		this.#buffer = buffer
@@ -26,6 +29,22 @@ export class Reader {
 		}
 
 		const buffer = new Uint8Array(result.value)
+		this.#totalBytesReceived += buffer.byteLength
+
+		// * Might be usefull eventually but shows no valuable data right now
+		// Log buffer status after new data arrives
+		// Logger.getInstance().logEvent({
+		// 	eventType: "buffer-status",
+		// 	vantagePointID: "SUBSCRIBER",
+		// 	stream: "logging-stream",
+		// 	data: {
+		// 		component: "TRANSPORT",
+		// 		type: "incoming",
+		// 		bytesReceived: buffer.byteLength,
+		// 		totalBytesReceived: this.#totalBytesReceived,
+		// 		currentBufferSize: this.#buffer.byteLength + buffer.byteLength,
+		// 	},
+		// })
 
 		if (this.#buffer.byteLength == 0) {
 			this.#buffer = buffer

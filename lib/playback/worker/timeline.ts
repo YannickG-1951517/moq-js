@@ -1,5 +1,6 @@
 import type { Frame } from "../../media/mp4"
 export type { Frame }
+import { Logger } from "../../logging/logger"
 
 export interface Range {
 	start: number
@@ -7,6 +8,10 @@ export interface Range {
 }
 
 export class Timeline {
+	#generation = 0
+	#currentTime = 0
+	#playing = false
+
 	// Maintain audio and video seprarately
 	audio: Component
 	video: Component
@@ -15,6 +20,31 @@ export class Timeline {
 	constructor() {
 		this.audio = new Component()
 		this.video = new Component()
+	}
+
+	#idle() {
+		// Log buffer status - use available methods to estimate buffer size
+		if (this.audio && this.video) {
+			// Count segments as an approximation of buffer fullness
+			const audioBufferEstimate = this.audio.segmentCount ? this.audio.segmentCount() : 0
+			const videoBufferEstimate = this.video.segmentCount ? this.video.segmentCount() : 0
+
+			// * Might be usefull eventually but shows no valuable data right now
+			// Logger.getInstance().logEvent({
+			// 	eventType: "buffer-status",
+			// 	vantagePointID: "SUBSCRIBER",
+			// 	stream: "logging-stream",
+			// 	data: {
+			// 		component: "TIMELINE",
+			// 		type: "media-buffer",
+			// 		audioBufferSize: audioBufferEstimate,
+			// 		videoBufferSize: videoBufferEstimate,
+			// 		totalBufferSize: audioBufferEstimate + videoBufferEstimate,
+			// 		generation: this.#generation,
+			// 		timestamp: this.#currentTime,
+			// 	},
+			// })
+		}
 	}
 }
 
@@ -41,6 +71,23 @@ export class Component {
 
 	get segments() {
 		return this.#segments.writable
+	}
+
+	segmentCount() {
+		// Return the number of segments in the buffer
+		const reader = this.#segments.readable.getReader()
+		let count = 0
+
+		const readSegments = async () => {
+			for (;;) {
+				const { done } = await reader.read()
+				if (done) break
+				count++
+			}
+		}
+
+		readSegments().finally(() => reader.releaseLock())
+		return count
 	}
 
 	async #pull(controller: ReadableStreamDefaultController<Frame>) {

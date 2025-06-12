@@ -9,6 +9,8 @@ import Backend from "./backend"
 import { Client } from "../transport/client"
 import { GroupReader } from "../transport/objects"
 
+import { Logger } from "../logging/logger"
+
 export type Range = Message.Range
 export type Timeline = Message.Timeline
 
@@ -56,7 +58,6 @@ export class Player {
 		const catalog = await Catalog.fetch(connection, config.namespace)
 
 		console.log("catalog", catalog)
-		
 
 		const canvas = config.canvas.transferControlToOffscreen()
 		const backend = new Backend({ canvas, catalog })
@@ -101,7 +102,6 @@ export class Player {
 
 	async #runTrack(track: Catalog.Track) {
 		if (!track.namespace) throw new Error("track has no namespace")
-		console.log("here")
 		const sub = await this.#connection.subscribe(track.namespace, track.name)
 
 		try {
@@ -121,6 +121,17 @@ export class Player {
 				if (!track.initTrack) {
 					throw new Error(`no init track for segment: ${track.name}`)
 				}
+
+				// Log segment arrival at player level
+				// Logger.getInstance().logEvent({
+				// 	eventType: "segment-player-received",
+				// 	vantagePointID: "SUBSCRIBER",
+				// 	stream: "logging-stream",
+				// 	data: {
+				// 		segmentId: segment.header.group,
+				// 		kind: kind,
+				// 	},
+				// })
 
 				const [buffer, stream] = segment.stream.release()
 

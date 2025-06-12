@@ -5,6 +5,7 @@ import { Track } from "./track"
 import * as Catalog from "../media/catalog"
 
 import { isAudioTrackSettings, isVideoTrackSettings } from "../common/settings"
+import { Logger } from "../logging/logger"
 
 export interface BroadcastConfig {
 	namespace: string
@@ -193,6 +194,19 @@ export class Broadcast {
 		const stream = await subscriber.group({
 			group: segment.id,
 			priority: 0, // TODO
+		})
+
+		// Add timestamp logging here for send time
+		Logger.getInstance().logEvent({
+			eventType: "group-sent",
+			vantagePointID: "PUBLISHER",
+			stream: "logging-stream",
+			data: {
+				namespace: subscriber.namespace,
+				track: subscriber.track,
+				groupId: segment.id,
+				priority: 0,
+			},
 		})
 
 		let object = 0

@@ -1,3 +1,5 @@
+import { Logger } from "../logging/logger"
+
 // Ring buffer with audio samples.
 
 enum STATE {
@@ -45,6 +47,8 @@ export class Ring {
 	state: Int32Array
 	channels: Float32Array[]
 	capacity: number
+	#totalBytesWritten: number = 0
+	#totalBytesRead: number = 0
 
 	constructor(shared: RingShared) {
 		this.state = new Int32Array(shared.state)
@@ -114,6 +118,31 @@ export class Ring {
 
 		Atomics.store(this.state, STATE.WRITE_POS, endPos)
 
+		const bytesWritten = (endPos - startPos) * Float32Array.BYTES_PER_ELEMENT
+		this.#totalBytesWritten += bytesWritten
+
+		const bufferSizeBytes = this.size() * Float32Array.BYTES_PER_ELEMENT
+		const capacityBytes = this.capacity * Float32Array.BYTES_PER_ELEMENT
+		const fillPercentage = (this.size() / this.capacity) * 100
+
+		// * Might be usefull eventually but shows no valuable data right now
+		// Logger.getInstance().logEvent({
+		// 	eventType: "buffer-status",
+		// 	vantagePointID: "SUBSCRIBER",
+		// 	stream: "logging-stream",
+		// 	data: {
+		// 		component: "AUDIO_BUFFER",
+		// 		type: "write",
+		// 		bytesWritten,
+		// 		totalBytesWritten: this.#totalBytesWritten,
+		// 		bufferSize: this.size(),
+		// 		bufferSizeBytes,
+		// 		capacityBytes,
+		// 		fillPercentage,
+		// 		availableSpace: this.capacity - this.size(),
+		// 	},
+		// })
+
 		return endPos - startPos
 	}
 
@@ -157,6 +186,31 @@ export class Ring {
 		}
 
 		Atomics.store(this.state, STATE.READ_POS, endPos)
+
+		const bytesRead = (endPos - startPos) * Float32Array.BYTES_PER_ELEMENT
+		this.#totalBytesRead += bytesRead
+
+		const bufferSizeBytes = this.size() * Float32Array.BYTES_PER_ELEMENT
+		const capacityBytes = this.capacity * Float32Array.BYTES_PER_ELEMENT
+		const fillPercentage = (this.size() / this.capacity) * 100
+
+		// * Might be usefull eventually but shows no valuable data right now
+		// Logger.getInstance().logEvent({
+		// 	eventType: "buffer-status",
+		// 	vantagePointID: "SUBSCRIBER",
+		// 	stream: "logging-stream",
+		// 	data: {
+		// 		component: "AUDIO_BUFFER",
+		// 		type: "read",
+		// 		bytesRead,
+		// 		totalBytesRead: this.#totalBytesRead,
+		// 		bufferSize: this.size(),
+		// 		bufferSizeBytes,
+		// 		capacityBytes,
+		// 		fillPercentage,
+		// 		availableSpace: this.capacity - this.size(),
+		// 	},
+		// })
 
 		return endPos - startPos
 	}

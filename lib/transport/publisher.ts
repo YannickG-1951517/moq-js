@@ -26,7 +26,7 @@ export class Publisher {
 	async announce(namespace: string): Promise<AnnounceSend> {
 		// ! IMPORTANT
 		Logger.getInstance().logEvent({
-			eventType: "announce-track",
+			eventType: "announce-sent",
 			vantagePointID: "PUBLISHER",
 			stream: "logging-stream",
 			data: {
@@ -61,7 +61,11 @@ export class Publisher {
 				vantagePointID: "PUBLISHER",
 				stream: "logging-stream",
 				data: {
-					message: msg,
+					kind: msg.kind,
+					namespace: msg.namespace,
+					id: msg.id,
+					trackId: msg.trackId,
+					name: msg.name,
 				},
 			})
 			await this.recvSubscribe(msg)
@@ -71,7 +75,7 @@ export class Publisher {
 				vantagePointID: "PUBLISHER",
 				stream: "logging-stream",
 				data: {
-					message: msg,
+					msg,
 				},
 			})
 			this.recvUnsubscribe(msg)
@@ -81,7 +85,7 @@ export class Publisher {
 				vantagePointID: "PUBLISHER",
 				stream: "logging-stream",
 				data: {
-					message: msg,
+					msg,
 				},
 			})
 			this.recvAnnounceOk(msg)
@@ -91,7 +95,7 @@ export class Publisher {
 				vantagePointID: "PUBLISHER",
 				stream: "logging-stream",
 				data: {
-					message: msg,
+					msg,
 				},
 			})
 			this.recvAnnounceError(msg)
@@ -129,9 +133,20 @@ export class Publisher {
 		this.#subscribe.set(msg.id, subscribe)
 		await this.#subscribeQueue.push(subscribe)
 
+		Logger.getInstance().logEvent({
+			eventType: "subscribe-ok-sent",
+			vantagePointID: "PUBLISHER",
+			stream: "logging-stream",
+			data: {
+				id: msg.id,
+				kind: msg.kind,
+				namespace: msg.namespace,
+				name: msg.name,
+				location: msg.location,
+			},
+		})
 		await this.#control.send({ kind: Control.Msg.SubscribeOk, id: msg.id, expires: 0n })
 	}
-
 	recvUnsubscribe(_msg: Control.Unsubscribe) {
 		throw new Error("TODO unsubscribe")
 	}
