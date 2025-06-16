@@ -197,17 +197,17 @@ export class Broadcast {
 		})
 
 		// Add timestamp logging here for send time
-		Logger.getInstance().logEvent({
-			eventType: "group-sent",
-			vantagePointID: "PUBLISHER",
-			stream: "logging-stream",
-			data: {
-				namespace: subscriber.namespace,
-				track: subscriber.track,
-				groupId: segment.id,
-				priority: 0,
-			},
-		})
+		// Logger.getInstance().logEvent({
+		// 	eventType: "group-sent",
+		// 	vantagePointID: "PUBLISHER",
+		// 	stream: "logging-stream",
+		// 	data: {
+		// 		namespace: subscriber.namespace,
+		// 		track: subscriber.track,
+		// 		groupId: segment.id,
+		// 		priority: 0,
+		// 	},
+		// })
 
 		let object = 0
 

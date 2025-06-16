@@ -88,6 +88,7 @@ export class Subscriber {
 	}
 
 	async recvAnnounce(msg: Control.Announce) {
+		console.log("announce message and sending to logger", msg)
 		if (this.#announce.has(msg.namespace)) {
 			throw new Error(`duplicate announce for namespace: ${msg.namespace}`)
 		}
@@ -197,7 +198,15 @@ export class AnnounceRecv {
 	async ok() {
 		if (this.#state !== "init") return
 		this.#state = "ack"
-
+		console.log("announce ok and sending to logger", this.namespace)
+		Logger.getInstance().logEvent({
+			eventType: "announce-ok-sent",
+			vantagePointID: "SUBSCRIBER",
+			stream: "logging-stream",
+			data: {
+				namespace: this.namespace,
+			},
+		})
 		// Send the control message.
 		return this.#control.send({ kind: Control.Msg.AnnounceOk, namespace: this.namespace })
 	}
